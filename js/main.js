@@ -45,7 +45,7 @@ var SpotMarker = function(data){
     this.marker = new google.maps.Marker({
         position: this.position,
         title: this.title,
-        animation: google.maps.Animations.DROP,
+        animation: google.maps.Animation.DROP,
         icon: defaultIcon
     });
     
@@ -91,7 +91,7 @@ var ViewModel = function(){
     
     //markers for all spots
     spots.forEach(function(spot) {
-        self.mapSideList.push( new LocationMarker(spot) );
+        self.mapSideList.push( new SpotMarker(spot) );
     });
     
     // shows which spots are on the map
@@ -123,23 +123,9 @@ function InfoWindow (marker, infowindow){
         infowindow.addListener('closeclick', function() {
         infowindow.marker = null;
     });
-    
-    //gets the address to display
-    function getReverseGeocodingData(marker.position) {
-        var latlng = new google.maps.LatLng(marker.position);
-        // This is making the Geocode request
-        var geocoder = new google.maps.Geocoder();
-        geocoder.geocode({ 'latLng': latlng }, function (results, status) {
-            if (status !== google.maps.GeocoderStatus.OK) {
-                alert(status);
-        }
-        // This is checking to see if the Geoeode Status is OK before proceeding
-        if (status == google.maps.GeocoderStatus.OK) {
-            console.log(results);
-            var address = (results[0].formatted_address);
-        }
-    });
-}
+        //
+        var adress = getReverseGeocodingData(marker.position);
+        
         
         var streetViewStart = new google.maps.StreetViewService();
         var radius = 50;
@@ -170,4 +156,36 @@ function InfoWindow (marker, infowindow){
         //open on slected marker
         infowindow.open(map, marker);
     }
+}
+
+
+
+// This function takes in a COLOR, and then creates a new marker
+// icon of that color. The icon will be 21 px wide by 34 high, have an origin
+// of 0, 0 and be anchored at 10, 34). Source: https://codepen.io/msliwka/pen/kXGpdb?editors=1000
+function makeMarkerIcon(markerColor) {
+    var markerImage = new google.maps.MarkerImage(
+        'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
+        '|40|_|%E2%80%A2',
+    new google.maps.Size(21, 34),
+    new google.maps.Point(0, 0),
+    new google.maps.Point(10, 34),
+    new google.maps.Size(21,34));
+    return markerImage;
+}
+//gets the address to display
+    function getReverseGeocodingData(lat, lng) {
+        var latlng = new google.maps.LatLng(lat, lng);
+        // This is making the Geocode request
+        var geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ 'latLng': latlng }, function (results, status) {
+            if (status !== google.maps.GeocoderStatus.OK) {
+                alert(status);
+        }
+        // This is checking to see if the Geoeode Status is OK before proceeding
+        if (status == google.maps.GeocoderStatus.OK) {
+            console.log(results);
+            var address = (results[0].formatted_address);
+        }
+    });
 }
