@@ -125,7 +125,7 @@ function InfoWindow (marker, infowindow){
     });
     
     //gets the address to display
-    function getReverseGeocodingData(marker.position.lat, marker.position.lng) {
+    function getReverseGeocodingData(marker.position) {
         var latlng = new google.maps.LatLng(marker.position);
         // This is making the Geocode request
         var geocoder = new google.maps.Geocoder();
