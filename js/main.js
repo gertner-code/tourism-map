@@ -7,8 +7,8 @@ var bounds;
 // map initializer
 function initMap() {
     var kyoto = {
-        lat: 35.0116,
-        lng: 135.7680
+        lat: parseFloat(35.0116),
+        lng: parseFloat(135.7680)
     };
     
     map = new google.maps.Map(document.getElementById('map'), {
@@ -62,8 +62,7 @@ var SpotMarker = function(data){
     
     //Onclick window for markers
     this.marker.addListener('click', function() {
-        populateInfoWindow(this, infoWindow);
-        toggleBounce(this);
+        makeInfoWindow(this, infoWindow);
         map.panTo(this.getPosition());
     });
     
@@ -76,7 +75,7 @@ var SpotMarker = function(data){
     });
     
     //show when clicked in list
-     this.show = function(spot) {
+     this.show = function(location) {
         google.maps.event.trigger(self.marker, 'click');
     };
     
@@ -112,7 +111,7 @@ var ViewModel = function(){
     }, self);
 };
 
-function InfoWindow (marker, infowindow){
+function makeInfoWindow (marker, infowindow){
     //Check if inforwindow is open
     if (infowindow.marker != marker) {
         // clear infowindow if open
@@ -124,10 +123,10 @@ function InfoWindow (marker, infowindow){
         infowindow.marker = null;
     });
         //
-        var adress = getReverseGeocodingData(marker.position);
+        var address = getReverseGeocodingData(marker.position.lat, marker.position.lng);
         
         
-        var streetViewStart = new google.maps.StreetViewService();
+        var streetviewService = new google.maps.StreetViewService();
         var radius = 50;
         
         var windowContent =  '<h3>' + marker.title + '</h3>' + '<p>' + address + '</p>'
@@ -146,13 +145,13 @@ function InfoWindow (marker, infowindow){
                     }
                 };
                 var streetview = new google.maps.StreetViewPanorama(
-                    document.getElementById('street-view'), panoramaOptions);
+                    document.getElementById('street-view'), streetviewOptions);
             } else {
                 infowindow.setContent(windowContent + '<div>No Streetview Found</div>');
             }
         };
         //create streetview
-        streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+        streetviewService.getPanoramaByLocation(marker.position, radius, getStreetView);
         //open on slected marker
         infowindow.open(map, marker);
     }
