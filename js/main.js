@@ -100,7 +100,7 @@ var ViewModel = function(){
             return ko.utils.arrayFilter(self.mapSideList(), function(spot) {
                 var name = spot.title.toLowerCase();
                 var filtered = name.includes(searchFilter);
-                spot.visible(result);
+                spot.visible(filtered);
 				return filtered;
 			});
         }
