@@ -32,8 +32,9 @@ var SpotMarker = function(data){
     var self = this;
     
     this.title = data.title;
-    this.position = data.location
-    
+    this.position = data.location;
+    this.wikiInfo = '';
+    //TODO make address work this.address = getReverseGeocodingData(data.location);
     this.visible = ko.observable(true);
     
     // adds colors to markers
@@ -41,10 +42,18 @@ var SpotMarker = function(data){
     var focusedIcon = makeMarkerIcon('C0A740');
     //
     
+    //Wiki API
+    var wikiUrl = 'https://en.wikipedia.org/api/rest_v1/page/summary/' + this.title;
+    self.wikiInfo = $.getJSON(wikiUrl, function(data){
+        console.log(data.extract_html);
+        return data.extract_html;
+    });
+    
     //Create markers array
     this.marker = new google.maps.Marker({
         position: this.position,
         title: this.title,
+        //address: this.address,
         animation: google.maps.Animation.DROP,
         icon: defaultIcon
     });
@@ -60,10 +69,11 @@ var SpotMarker = function(data){
         }
     });
     
-    //Onclick window for markers
+    //Onclick for markers infowindow and wiki-info div
     this.marker.addListener('click', function() {
         makeInfoWindow(this, infoWindow);
         map.panTo(this.getPosition());
+        $("#wikiInfo").html(self.wikiInfo);
     });
     
     //change color mouseover/mouseout
@@ -122,21 +132,19 @@ function makeInfoWindow (marker, infowindow){
         infowindow.addListener('closeclick', function() {
         infowindow.marker = null;
     });
-        //
-        var address = getReverseGeocodingData(marker.position.lat, marker.position.lng);
-        
+
         
         var streetviewService = new google.maps.StreetViewService();
         var radius = 50;
         
-        var windowContent =  '<h3>' + marker.title + '</h3>' + '<p>' + address + '</p>'
+        var windowContent =  '<h3>' + marker.title + '</h3>' + '<a href="#wiki-info">More Info Below</a>' /* TODO add address '<p>' + marker.address + '</p>' */
         
         //find the streetview for display
         var getStreetView = function (data, status) {
             if (status == google.maps.StreetViewStatus.OK) {
                 var nearSpot = data.location.latLng;
                 var heading = google.maps.geometry.spherical.computeHeading(nearSpot, marker.position);
-                infowindow.setContent(windowContent + '<div id="street-view"></div>');
+                infowindow.setContent(windowContent + '<div id="street-view" style="height: 20em; width: 20em;"></div>');
                 var streetviewOptions = {
                     position: nearSpot,
                     pov: {
@@ -172,7 +180,7 @@ function makeMarkerIcon(markerColor) {
     new google.maps.Size(21,34));
     return markerImage;
 }
-//gets the address to display
+/* gets the address to display
     function getReverseGeocodingData(lat, lng) {
         var latlng = new google.maps.LatLng(lat, lng);
         // This is making the Geocode request
@@ -188,3 +196,4 @@ function makeMarkerIcon(markerColor) {
         }
     });
 }
+*/

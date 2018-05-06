@@ -32,14 +32,14 @@ var spots = [
     {
         title: 'Kinkaku-ji',
         location: {
-        lat: parseFloat(34.0394),
+        lat: parseFloat(35.0394),
         lng: parseFloat(135.7292)
     }
     },
     {
         title: 'Nijō Castle',
         location: {
-        lat: parseFloat(34.0142),
+        lat: parseFloat(35.0142),
         lng: parseFloat(135.7482)
     }
     },
