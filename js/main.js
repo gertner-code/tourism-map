@@ -2,9 +2,15 @@ var map;
 var infoWindow;
 var bounds;
 
-// bit of jquery to make the wikiInfo the same size as the map for non-mobile setting. 
-// TODO make resizing dynamic so that changing size of browser doesn't mess up size.
+// bit of jquery to make the wikiInfo the same size as the map for non-mobile setting.
+
 $(document).ready(function() {
+  $("#wikiInfo").css({
+    'width': ($("#map").width() + 'px')
+  });
+});
+
+$(window).resize(function() {
   $("#wikiInfo").css({
     'width': ($("#map").width() + 'px')
   });
@@ -37,7 +43,7 @@ function mapError(){
 
 var SpotMarker = function(data){
     var self = this;
-    this.num = data.num
+    this.num = data.num;
     this.title = data.title;
     this.position = data.location;
     //TODO make address work this.address = getReverseGeocodingData(data.location);
@@ -145,7 +151,7 @@ function makeInfoWindow (marker, infowindow){
         var streetviewService = new google.maps.StreetViewService();
         var radius = 50;
         
-        var windowContent =  '<h3>' + marker.title + '</h3>' + '<a href="#wiki-info">Click here for more</a>' /* TODO add address '<p>' + marker.address + '</p>' */
+        var windowContent =  '<h3>' + marker.title + '</h3>' + '<a href="#wiki-info">Click here for more</a>'; /* TODO add address '<p>' + marker.address + '</p>' */
         
         //Wiki API
         var wikiUrl = 'https://en.wikipedia.org/api/rest_v1/page/summary/' + marker.title;
