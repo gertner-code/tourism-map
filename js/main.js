@@ -4,13 +4,13 @@ var bounds;
 
 // bit of jquery to make the wikiInfo the same size as the map for non-mobile setting.
 
-$(document).ready(function() {
+$(document).ready(function () {
   $("#wikiInfo").css({
-    'width': ($("#map").width() + 'px')
+      'width': ($("#map").width() + 'px')
   });
 });
 
-$(window).resize(function() {
+$(window).resize(function () {
   $("#wikiInfo").css({
     'width': ($("#map").width() + 'px')
   });
@@ -43,11 +43,11 @@ function mapError(){
 
 var SpotMarker = function(data){
     var self = this;
-    this.num = data.num;
-    this.title = data.title;
-    this.position = data.location;
+    self.num = data.num;
+    self.title = data.title;
+    self.position = data.location;
     //TODO make address work this.address = getReverseGeocodingData(data.location);
-    this.visible = ko.observable(true);
+    self.visible = ko.observable(true);
     
     // adds colors to markers
     var defaultIcon = makeMarkerIcon('BC002D');
@@ -62,7 +62,7 @@ var SpotMarker = function(data){
     });
     */
     //Create markers array
-    this.marker = new google.maps.Marker({
+    self.marker = new google.maps.Marker({
         position: this.position,
         title: this.title,
         num: this.num,
@@ -107,10 +107,9 @@ var SpotMarker = function(data){
 // ViewModel
 var ViewModel = function(){
     var self = this;
-    
+    this.wiki = ko.observable('');
     this.searchSpot = ko.observable('');
     this.mapSideList = ko.observableArray([]);
-    
     //markers for all spots
     spots.forEach(function(spot) {
         self.mapSideList.push( new SpotMarker(spot) );
@@ -135,6 +134,9 @@ var ViewModel = function(){
 };
 
 function makeInfoWindow (marker, infowindow){
+    
+    this.wiki = ko.observable('');
+    
     //Check if inforwindow is open
     if (infowindow.marker != marker) {
         // clear infowindow if open
@@ -155,10 +157,12 @@ function makeInfoWindow (marker, infowindow){
         
         //Wiki API
         var wikiUrl = 'https://en.wikipedia.org/api/rest_v1/page/summary/' + marker.title;
-        $.getJSON(wikiUrl, function(data){
-                console.log(data.extract_html);
-                $("#wikiInfo").html(data.extract_html);
-        });
+        $.getJSON(wikiUrl)
+            .done(function(json){
+                console.log(json.extract_html);
+                $("#wikiInfo").html(json.extract_html);
+            })
+            .fail(alert('The Wiki API failed to respond.'));
 
         //find the streetview for display
         var getStreetView = function (data, status) {
