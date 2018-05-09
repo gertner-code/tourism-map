@@ -2,6 +2,13 @@ var map;
 var infoWindow;
 var bounds;
 
+// bit of jquery to make the wikiInfo the same size as the map for non-mobile setting. 
+// TODO make resizing dynamic so that changing size of browser doesn't mess up size.
+$(document).ready(function() {
+  $("#wikiInfo").css({
+    'width': ($("#map").width() + 'px')
+  });
+});
 // google maps
 
 // map initializer
@@ -30,10 +37,9 @@ function mapError(){
 
 var SpotMarker = function(data){
     var self = this;
-    
+    this.num = data.num
     this.title = data.title;
     this.position = data.location;
-    this.wikiInfo = '';
     //TODO make address work this.address = getReverseGeocodingData(data.location);
     this.visible = ko.observable(true);
     
@@ -42,17 +48,18 @@ var SpotMarker = function(data){
     var focusedIcon = makeMarkerIcon('C0A740');
     //
     
-    //Wiki API
+    /*Wiki API
     var wikiUrl = 'https://en.wikipedia.org/api/rest_v1/page/summary/' + this.title;
-    self.wikiInfo = $.getJSON(wikiUrl, function(data){
+    wikiHold[this.num] = $.getJSON(wikiUrl, function(data){
         console.log(data.extract_html);
         return data.extract_html;
     });
-    
+    */
     //Create markers array
     this.marker = new google.maps.Marker({
         position: this.position,
         title: this.title,
+        num: this.num,
         //address: this.address,
         animation: google.maps.Animation.DROP,
         icon: defaultIcon
@@ -73,7 +80,7 @@ var SpotMarker = function(data){
     this.marker.addListener('click', function() {
         makeInfoWindow(this, infoWindow);
         map.panTo(this.getPosition());
-        $("#wikiInfo").html(self.wikiInfo);
+        //alert(JSON.stringify(wikiHold[this.num])); //show the summary
     });
     
     //change color mouseover/mouseout
@@ -128,17 +135,25 @@ function makeInfoWindow (marker, infowindow){
         infowindow.setContent('');
         infowindow.marker = marker;
         
-        //clear marker on infowindow close
+        //clear marker and wikiInfo on infowindow close
         infowindow.addListener('closeclick', function() {
         infowindow.marker = null;
+        $("#wikiInfo").html("");
     });
 
         
         var streetviewService = new google.maps.StreetViewService();
         var radius = 50;
         
-        var windowContent =  '<h3>' + marker.title + '</h3>' + '<a href="#wiki-info">More Info Below</a>' /* TODO add address '<p>' + marker.address + '</p>' */
+        var windowContent =  '<h3>' + marker.title + '</h3>' + '<a href="#wiki-info">Click here for more</a>' /* TODO add address '<p>' + marker.address + '</p>' */
         
+        //Wiki API
+        var wikiUrl = 'https://en.wikipedia.org/api/rest_v1/page/summary/' + marker.title;
+        $.getJSON(wikiUrl, function(data){
+                console.log(data.extract_html);
+                $("#wikiInfo").html(data.extract_html);
+        });
+
         //find the streetview for display
         var getStreetView = function (data, status) {
             if (status == google.maps.StreetViewStatus.OK) {
@@ -180,7 +195,8 @@ function makeMarkerIcon(markerColor) {
     new google.maps.Size(21,34));
     return markerImage;
 }
-/* gets the address to display
+/* gets the address to display 
+//TODO make this work (problems sending latlng to function)
     function getReverseGeocodingData(lat, lng) {
         var latlng = new google.maps.LatLng(lat, lng);
         // This is making the Geocode request

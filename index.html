@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kyoto Tourism Map</title>
+    <link href="http://fonts.googleapis.com/css?family=Roboto:400,300,700" rel="stylesheet" type="text/css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="js/lib/knockout-3.4.2.js"></script>
     <script src="js/data.js"></script>
@@ -11,20 +12,28 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    
-    <nav>
+    <div id="flex">
+    <h1 id="title">Kyoto Tourism Map</h1>
     <form class="top search" role="search">
         <input type="text" class="form-control" placeholder="Search" data-bind="textInput: searchSpot">
-        <button class="submit">Search</button>
     </form>
-    <ul data-bind="foreach: spotList">
-        <li class="list-group"><a href="#" data-bind="text: title, click: show" ></a></li>
-    </ul>
+    <div class="list-map-flex">
+    <nav role='navigation'>
+        <div id="menuToggle">
+            <input type="checkbox" />
+            <span></span>
+            <span></span>
+            <span></span>
+            <ul id="menu" data-bind="foreach: spotList">
+                <li class="list-group"><a href="#" data-bind="text: title, click: show" ></a></li>
+            </ul>
+        </div>
     </nav>
     
-    <div id="map" style="height: 35em;"></div>
-    <div id="wikiInfo" style="height: 10em;"></div>    
-        
+    <div id="map"></div>
+    </div>
+    <div id="wikiInfo"></div>    
+    </div>    
         
         
     <script async defer
