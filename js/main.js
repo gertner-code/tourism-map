@@ -4,17 +4,6 @@ var bounds;
 
 // bit of jquery to make the wikiInfo the same size as the map for non-mobile setting.
 
-$(document).ready(function () {
-  $("#wikiInfo").css({
-      'width': ($("#map").width() + 'px')
-  });
-});
-
-$(window).resize(function () {
-  $("#wikiInfo").css({
-    'width': ($("#map").width() + 'px')
-  });
-});
 // google maps
 
 // map initializer
@@ -54,13 +43,7 @@ var SpotMarker = function(data){
     var focusedIcon = makeMarkerIcon('C0A740');
     //
     
-    /*Wiki API
-    var wikiUrl = 'https://en.wikipedia.org/api/rest_v1/page/summary/' + this.title;
-    wikiHold[this.num] = $.getJSON(wikiUrl, function(data){
-        console.log(data.extract_html);
-        return data.extract_html;
-    });
-    */
+
     //Create markers array
     self.marker = new google.maps.Marker({
         position: this.position,
@@ -86,7 +69,7 @@ var SpotMarker = function(data){
     this.marker.addListener('click', function() {
         makeInfoWindow(this, infoWindow);
         map.panTo(this.getPosition());
-        //alert(JSON.stringify(wikiHold[this.num])); //show the summary
+        wikiContent(self.title);
     });
     
     //change color mouseover/mouseout
@@ -107,9 +90,9 @@ var SpotMarker = function(data){
 // ViewModel
 var ViewModel = function(){
     var self = this;
-    this.wiki = ko.observable('');
     this.searchSpot = ko.observable('');
     this.mapSideList = ko.observableArray([]);
+    this.wiki = ko.observable('');
     //markers for all spots
     spots.forEach(function(spot) {
         self.mapSideList.push( new SpotMarker(spot) );
@@ -135,7 +118,6 @@ var ViewModel = function(){
 
 function makeInfoWindow (marker, infowindow){
     
-    this.wiki = ko.observable('');
     
     //Check if inforwindow is open
     if (infowindow.marker != marker) {
@@ -156,13 +138,13 @@ function makeInfoWindow (marker, infowindow){
         var windowContent =  '<h3>' + marker.title + '</h3>' + '<a href="#wiki-info">Click here for more</a>'; /* TODO add address '<p>' + marker.address + '</p>' */
         
         //Wiki API
-        var wikiUrl = 'https://en.wikipedia.org/api/rest_v1/page/summary/' + marker.title;
+        /*var wikiUrl = 'https://en.wikipedia.org/api/rest_v1/page/summary/' + marker.title;
         $.getJSON(wikiUrl)
             .done(function(json){
                 console.log(json.extract_html);
                 $("#wikiInfo").html(json.extract_html);
             })
-            .fail(alert('The Wiki API failed to respond.'));
+            .fail(alert('The Wiki API failed to respond.')); */
 
         //find the streetview for display
         var getStreetView = function (data, status) {
@@ -205,6 +187,22 @@ function makeMarkerIcon(markerColor) {
     new google.maps.Size(21,34));
     return markerImage;
 }
+
+function wikiContent(title){
+    var summary = title
+    var wikiUrl = 'https://en.wikipedia.org/api/rest_v1/page/summary/' + summary;
+    $.ajax({
+			url: wikiUrl, 
+			type: "GET", 
+			success: function(data){
+				var object = data.extract_html;
+                    console.log(object);
+					ViewModel.wiki(object);
+		}}).fail(function(){
+				wiki(alert("We are sorry, but Wikipedia content is not available at the moment. Try again soon."));
+			});
+}
+    
 /* gets the address to display 
 //TODO make this work (problems sending latlng to function)
     function getReverseGeocodingData(lat, lng) {

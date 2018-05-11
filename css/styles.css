@@ -91,6 +91,10 @@ i {
         align-self: flex-end;
         max-width: 100%;
     }
+    #mapwiki {
+        display: flex;
+        flex-direction: column;
+    }
     
 }
 

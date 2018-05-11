@@ -1,10 +1,10 @@
 // Model Data for Tourist Spots in Kyoto
-var spots = [
+var spots =  [
     {
         title: 'Kyoto Tower',
         location: {
         lat: parseFloat(34.9876),
-        lng: parseFloat(135.7593) 
+        lng: parseFloat(135.7593)
         
     }
     },
@@ -50,4 +50,5 @@ var spots = [
         lng: parseFloat(135.6668)
     }
     },
+    
 ];
