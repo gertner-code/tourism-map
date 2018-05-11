@@ -114,6 +114,8 @@ var ViewModel = function(){
         });
         return self.mapSideList();
     }, self);
+    
+    
 };
 
 function makeInfoWindow (marker, infowindow){
