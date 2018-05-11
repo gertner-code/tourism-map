@@ -10,12 +10,6 @@
     <script src="js/data.js"></script>
     <script src="js/main.js"></script>
     <link rel="stylesheet" href="css/styles.css">
-    
-    <script type="text/javascript">
-        var viewmodel ={ 
-            wiki: ko.observable('')
-        };
-    </script>   
 </head>
 <body>
     <div id="flex">
@@ -23,23 +17,24 @@
     <form class="top search" role="search">
         <input type="text" class="form-control" placeholder="Search" data-bind="textInput: searchSpot">
     </form>
-    <div class="list-map-flex">
-    <nav role='navigation'>
-        <div id="menuToggle">
-            <input type="checkbox" />
-            <span></span>
-            <span></span>
-            <span></span>
-            <ul id="menu" data-bind="foreach: spotList">
-                <li class="list-group"><a href="#" data-bind="text: title, click: show" ></a></li>
-            </ul>
+        <div class="list-map-flex">
+            <nav role='navigation'>
+                <div id="menuToggle">
+                    <input type="checkbox" />
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <ul id="menu" data-bind="foreach: spotList">
+                        <li class="list-group"><a href="#" data-bind="text: title, click: show" ></a></li>
+                    </ul>
+                </div>
+            </nav>
+            <div id="mapwiki">
+                <div id="map"></div>
+                <div id="wikiInfo" data-bind="html: wiki"></div>    
+            </div> 
         </div>
-    </nav>
-    
-    <div id="map"></div>
     </div>
-    <div id="wikiInfo" data-bind="html: wiki"></div>    
-    </div>    
     
         
     <script async defer

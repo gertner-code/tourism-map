@@ -92,7 +92,7 @@ var ViewModel = function(){
     var self = this;
     this.searchSpot = ko.observable('');
     this.mapSideList = ko.observableArray([]);
-    this.wiki = ko.observable('');
+    wiki: ko.observable(' ')
     //markers for all spots
     spots.forEach(function(spot) {
         self.mapSideList.push( new SpotMarker(spot) );
