@@ -1,10 +1,39 @@
 var map;
 var infoWindow;
 var bounds;
+var vm;
 
-// bit of jquery to make the wikiInfo the same size as the map for non-mobile setting.
+// ViewModel
+var ViewModel = function(){
+    var self = this;
+    this.searchSpot = ko.observable('');
+    this.mapSideList = ko.observableArray([]);
+    this.wiki = ko.observable(' ');
+    //markers for all spots
+    spots.forEach(function(spot) {
+        self.mapSideList.push( new SpotMarker(spot) );
+    });
+    
+    // shows which spots are on the map
+    this.spotList = ko.computed(function() {
+        var searchFilter = self.searchSpot().toLowerCase();
+        if (searchFilter) {
+            return ko.utils.arrayFilter(self.mapSideList(), function(spot) {
+                var name = spot.title.toLowerCase();
+                var filtered = name.includes(searchFilter);
+                spot.visible(filtered);
+				return filtered;
+			});
+        }
+        self.mapSideList().forEach(function(spot) {
+            spot.visible(true);
+        });
+        return self.mapSideList();
+    }, self);  
+};
 
 // google maps
+
 
 // map initializer
 function initMap() {
@@ -23,7 +52,8 @@ function initMap() {
 
     bounds = new google.maps.LatLngBounds();
    
-    ko.applyBindings(new ViewModel());
+    vm = new ViewModel();
+    ko.applyBindings(vm);
 }
 
 function mapError(){
@@ -69,6 +99,7 @@ var SpotMarker = function(data){
     this.marker.addListener('click', function() {
         makeInfoWindow(this, infoWindow);
         map.panTo(this.getPosition());
+        toggleBounce(this);
         wikiContent(self.title);
     });
     
@@ -85,38 +116,13 @@ var SpotMarker = function(data){
         google.maps.event.trigger(self.marker, 'click');
     };
     
+     this.bounce = function(place) {
+		google.maps.event.trigger(self.marker, 'click');
+	};
+    
 };
 
-// ViewModel
-var ViewModel = function(){
-    var self = this;
-    this.searchSpot = ko.observable('');
-    this.mapSideList = ko.observableArray([]);
-    wiki: ko.observable(' ')
-    //markers for all spots
-    spots.forEach(function(spot) {
-        self.mapSideList.push( new SpotMarker(spot) );
-    });
-    
-    // shows which spots are on the map
-    this.spotList = ko.computed(function() {
-        var searchFilter = self.searchSpot().toLowerCase();
-        if (searchFilter) {
-            return ko.utils.arrayFilter(self.mapSideList(), function(spot) {
-                var name = spot.title.toLowerCase();
-                var filtered = name.includes(searchFilter);
-                spot.visible(filtered);
-				return filtered;
-			});
-        }
-        self.mapSideList().forEach(function(spot) {
-            spot.visible(true);
-        });
-        return self.mapSideList();
-    }, self);
-    
-    
-};
+
 
 function makeInfoWindow (marker, infowindow){
     
@@ -199,12 +205,24 @@ function wikiContent(title){
 			success: function(data){
 				var object = data.extract_html;
                     console.log(object);
-					ViewModel.wiki(object);
+					vm.wiki(object);
 		}}).fail(function(){
 				wiki(alert("We are sorry, but Wikipedia content is not available at the moment. Try again soon."));
 			});
 }
-    
+
+// Function for toggling bounce. 
+function toggleBounce(marker) {
+  if (marker.getAnimation() !== null) {
+    marker.setAnimation(null);
+  } else {
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+    setTimeout(function() {
+        marker.setAnimation(null);
+    }, 1400);
+  }
+}
+
 /* gets the address to display 
 //TODO make this work (problems sending latlng to function)
     function getReverseGeocodingData(lat, lng) {
