@@ -116,10 +116,6 @@ var SpotMarker = function(data){
         google.maps.event.trigger(self.marker, 'click');
     };
     
-     this.bounce = function(place) {
-		google.maps.event.trigger(self.marker, 'click');
-	};
-    
 };
 
 
@@ -136,7 +132,7 @@ function makeInfoWindow (marker, infowindow){
         //clear marker and wikiInfo on infowindow close
         infowindow.addListener('closeclick', function() {
         infowindow.marker = null;
-        $("#wikiInfo").html("");
+        vm.wiki("");
     });
 
         
@@ -207,7 +203,7 @@ function wikiContent(title){
                     console.log(object);
 					vm.wiki(object);
 		}}).fail(function(){
-				wiki(alert("We are sorry, but Wikipedia content is not available at the moment. Try again soon."));
+				alert("We are sorry, but Wikipedia content is not available at the moment. Try again soon.");
 			});
 }
 
